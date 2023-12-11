@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLANK</title>
+    <style>
+
+        
+        body {
+            font-family: 'BLANK design', sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: 'Your Desired Font', sans-serif;
+            font-size: 200px;
+            color: #333;
+            text-align: center;
+        }
+
+        h2 {
+            font-family: 'Your Desired Font', sans-serif;
+            font-size: 30px;
+            color: #333;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+
+        #bottomText {
+            position: absolute;
+            bottom: 100px;
+            left: 10px;
+            color: #333;
+            font-size: 30px;
+            margin-left: 50px;
+}
+
+#infotext {
+    position: absolute;
+    bottom: 70px;
+    left: 10px;
+    color: #333;
+    font-size: 20px;
+    margin-left: 50px;
+}
+
+        #bubble {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: #F24979;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #bubble {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background-image: url('BLANK/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHgxMDM0ODQ5LWltYWdlLWpvYjYzMC1hLWwwZzA4aHBvLnBuZw.webp'); /* Replace 'path/to/glass-texture.png' with the actual path to your glass texture image */
+    background-size: cover;
+    background-color: #f2497971; /* Semi-transparent blue background */
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 20px #F24979; /* Subtle blue box-shadow for glass effect */
+}
+
+
+
+    </style>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            document.body.appendChild(canvas);
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            var mouseTrail = [];
+            var trailTimeout;
+
+            var bubble = document.getElementById("bubble");
+
+            function drawTrail() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (mouseTrail.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(mouseTrail[0].x, mouseTrail[0].y);
+
+                    for (var i = 1; i < mouseTrail.length; i++) {
+                        ctx.lineTo(mouseTrail[i].x, mouseTrail[i].y);
+                    }
+
+                    ctx.strokeStyle = mouseTrail[0].color;
+                    ctx.lineWidth = 5;
+                    ctx.lineJoin = 'round';
+                    ctx.stroke();
+                }
+            }
+
+            function update() {
+                drawTrail();
+                moveBubble();
+                requestAnimationFrame(update);
+            }
+
+            function clearTrail() {
+                mouseTrail = [];
+            }
+
+            function setClearTimeout() {
+                clearTimeout(trailTimeout);
+                trailTimeout = setTimeout(clearTrail, 200);
+            }
+
+            function moveBubble() {
+                // Adjust the speed of bubble movement by changing these values
+                var bubbleSpeedX = 1;
+                var bubbleSpeedY = 1;
+
+                var bubbleRect = bubble.getBoundingClientRect();
+                var newX = bubbleRect.left + bubbleSpeedX;
+                var newY = bubbleRect.top + bubbleSpeedY;
+
+                // Check boundaries to keep the bubble within the viewport
+                if (newX < 0 || newX + bubbleRect.width > window.innerWidth) {
+                    bubbleSpeedX = -bubbleSpeedX;
+                }
+                if (newY < 0 || newY + bubbleRect.height > window.innerHeight) {
+                    bubbleSpeedY = -bubbleSpeedY;
+                }
+
+                bubble.style.left = newX + "px";
+                bubble.style.top = newY + "px";
+            }
+
+            document.addEventListener("mousemove", function(event) {
+                var color = "#F24979";
+                var trailLength = 30;
+
+                var x = event.clientX;
+                var y = event.clientY + window.scrollY;
+
+                mouseTrail.push({
+                    x: x,
+                    y: y,
+                    color: color
+                });
+
+                if (mouseTrail.length > trailLength) {
+                    mouseTrail.shift();
+                }
+
+                setClearTimeout();
+            });
+
+            window.addEventListener("resize", function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            update();
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+    var bubble = document.getElementById("bubble");
+
+    document.addEventListener("mousemove", function(event) {
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+
+        var bubbleRect = bubble.getBoundingClientRect();
+        var bubbleX = bubbleRect.left + bubbleRect.width / 2;
+        var bubbleY = bubbleRect.top + bubbleRect.height / 2;
+
+        var deltaX = bubbleX - mouseX;
+        var deltaY = bubbleY - mouseY;
+
+        var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        var maxDistance = 100;
+
+        if (distance < bubbleRect.width / 2 + maxDistance) {
+            var angle = Math.atan2(deltaY, deltaX);
+            var moveDistance = bubbleRect.width / 2 + maxDistance - distance;
+
+            var moveX = moveDistance * Math.cos(angle);
+            var moveY = moveDistance * Math.sin(angle);
+
+            // Calculate the new position
+            var newX = bubbleRect.left + moveX;
+            var newY = bubbleRect.top + moveY;
+
+            // Ensure the new position stays within the bounds of the page
+            var maxX = window.innerWidth - bubbleRect.width;
+            var maxY = window.innerHeight - bubbleRect.height;
+
+            newX = Math.max(0, Math.min(newX, maxX));
+            newY = Math.max(0, Math.min(newY, maxY));
+
+            bubble.style.left = newX + "px";
+            bubble.style.top = newY + "px";
+        }
+    });
+});
+
+
+
+    </script>
+
+
+
+</head>
+<body>
+    <h1>BLANK</h1>
+    <h2>Under Construction</h2>
+    <h1 id="bottomText">Contact info </h1>
+    <h2 id="infotext">blankgraphicsinfo@gmail.com</h2>
+
+
+
+</body>
+
+
+    <div id="bubble"></div>
+    
+</html>
